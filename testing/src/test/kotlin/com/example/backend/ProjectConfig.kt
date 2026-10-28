@@ -1,4 +1,4 @@
-package com.example.testing
+package com.example.backend
 
 import io.kotest.core.config.AbstractProjectConfig
 import io.kotest.extensions.spring.SpringExtension

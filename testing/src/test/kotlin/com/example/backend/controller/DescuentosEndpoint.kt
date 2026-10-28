@@ -1,6 +1,6 @@
-package com.example.testing.controller
+package com.example.backend.controller
 
-import com.example.testing.service.CalculadoraDeDescuentos
+import com.example.backend.service.CalculadoraDeDescuentos
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam

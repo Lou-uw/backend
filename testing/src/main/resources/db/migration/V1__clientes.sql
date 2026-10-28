@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    telefono VARCHAR(100),
+    direccion VARCHAR(300)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

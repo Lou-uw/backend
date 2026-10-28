@@ -1,4 +1,4 @@
-package com.example.testing.controller
+package com.example.backend.controller
 
 import io.kotest.core.spec.style.BehaviorSpec
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc

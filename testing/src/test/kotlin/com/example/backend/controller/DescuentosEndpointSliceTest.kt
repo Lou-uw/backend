@@ -1,8 +1,8 @@
-package com.example.testing.controller
+package com.example.backend.controller
 
 import com.ninjasquad.springmockk.MockkBean
-import com.example.testing.service.CalculadoraDeDescuentos
-import com.example.testing.model.PrecondicionInvalidaException
+import com.example.backend.service.CalculadoraDeDescuentos
+import com.example.backend.model.PrecondicionInvalidaException
 import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.every
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest

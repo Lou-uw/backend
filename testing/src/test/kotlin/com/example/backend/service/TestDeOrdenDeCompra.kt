@@ -1,6 +1,6 @@
-package com.example.testing.service
+package com.example.backend.service
 
-import com.example.testing.model.Item
+import com.example.backend.model.Item
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 

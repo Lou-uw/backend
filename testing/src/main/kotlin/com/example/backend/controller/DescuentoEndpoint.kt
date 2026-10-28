@@ -1,7 +1,7 @@
-package com.example.testing.controller
+package com.example.backend.controller
 
-import com.example.testing.model.PrecondicionInvalidaException
-import com.example.testing.service.CalculadoraDeDescuentos
+import com.example.backend.model.PrecondicionInvalidaException
+import com.example.backend.service.CalculadoraDeDescuentos
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping

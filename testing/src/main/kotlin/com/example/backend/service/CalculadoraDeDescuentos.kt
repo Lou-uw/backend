@@ -1,6 +1,6 @@
-package com.example.testing.service
+package com.example.backend.service
 
-import com.example.testing.model.PrecondicionInvalidaException
+import com.example.backend.model.PrecondicionInvalidaException
 import org.springframework.stereotype.Service
 
 @Service

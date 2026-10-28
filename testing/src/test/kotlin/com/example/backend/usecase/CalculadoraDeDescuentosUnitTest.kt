@@ -1,7 +1,7 @@
-package com.example.testing.usecase
+package com.example.backend.usecase
 
-import com.example.testing.model.PrecondicionInvalidaException
-import com.example.testing.service.CalculadoraDeDescuentos
+import com.example.backend.model.PrecondicionInvalidaException
+import com.example.backend.service.CalculadoraDeDescuentos
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
