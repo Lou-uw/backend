@@ -7,20 +7,34 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.math.BigDecimal
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+
 
 @Entity
 @Table(name = "productos")
-class Producto(
+open class Producto(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Int? = null,
 
-    @Column(nullable = false, length = 120)
-    var nombre: String = "",
+    @Column(length = 100)
+    var nombre: String? = null,
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    var precio: BigDecimal = BigDecimal.ZERO,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    var categoria: Categoria? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_sabor_id")
+    var tipoSabor: TipoSabor? = null,
+
+    @Column(precision = 10, scale = 2)
+    var precio: BigDecimal? = null,
+
+    var stock: Int? = null,
 
     @Column(nullable = false)
-    var stock: Int = 0,
+    var activo: Boolean = true
 )

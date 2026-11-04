@@ -1,0 +1,10 @@
+package etec.bdd.dto
+
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
+
+data class BordeRequest(
+    @field:NotBlank
+    @field:Size(min = 1, max = 50)
+    val nombre: String,
+)

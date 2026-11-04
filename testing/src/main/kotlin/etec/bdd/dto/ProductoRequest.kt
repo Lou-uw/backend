@@ -9,14 +9,19 @@ import java.math.BigDecimal
 
 data class ProductoRequest(
     @field:NotBlank
-    @field:Size(min = 1, max = 120)
+    @field:Size(min = 1, max = 100)
     val nombre: String,
 
     @field:NotNull
-    @field:DecimalMin(value = "0.0", inclusive = true)
-    val precio: BigDecimal,
+    val categoriaId: Int,
 
-    @field:NotNull
+    val tipoSaborId: Int? = null,      // solo pizzas
+
+    @field:DecimalMin(value = "0.0", inclusive = true)
+    val precio: BigDecimal? = null,    // solo papas y bebidas
+
     @field:Min(0)
-    val stock: Int,
+    val stock: Int? = null,
+
+    val activo: Boolean = true,
 )
