@@ -1,5 +1,8 @@
 CREATE TABLE IF NOT EXISTS tamanios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(30) NOT NULL,
-    factor_precio DECIMAL(5,2) NOT NULL DEFAULT 1.00
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    porciones INT,
+    precio_clasica FLOAT NOT NULL,
+    precio_especial FLOAT NOT NULL,
+    precio_borde FLOAT NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
