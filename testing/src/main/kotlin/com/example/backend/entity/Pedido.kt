@@ -1,39 +1,39 @@
 package com.example.backend.entity
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "pedidos")
-open class Pedido(
+class Pedido(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-    @Column(nullable = false)
-    var fecha: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "fecha")
+    var fecha: LocalDateTime? = null,
 
-    @Column(nullable = false, length = 100)
-    var nombre: String = "",
+    @Column(name = "total")
+    var total: BigDecimal? = null,
 
-    @Column(nullable = false, length = 30)
-    var telefono: String = "",
+    @Column(name = "estado", length = 50)
+    var estado: String? = null,
 
-    @Column(name = "tipo_entrega", nullable = false, length = 30)
-    var tipoEntrega: String = "",
+    @Column(name = "forma_pago", length = 30)
+    var formaPago: String? = null,
+
+    @Column(name = "cliente_nombre", length = 100)
+    var clienteNombre: String? = null,
+
+    @Column(name = "cliente_telefono", length = 50)
+    var clienteTelefono: String? = null,
 
     @Column(name = "direccion_entrega", length = 300)
-    var direccionEntrega: String? = null,
-
-    @Column(name = "forma_pago", nullable = false, length = 30)
-    var formaPago: String = "",
-
-    @Column(nullable = false)
-    var total: Double = 0.0,
-
-    @Column(nullable = false, length = 30)
-    var estado: String = "PENDIENTE",
-
-    @OneToMany(mappedBy = "pedido", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var detalles: MutableList<PedidoDetalle> = mutableListOf()
+    var direccionEntrega: String? = null
 )

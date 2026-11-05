@@ -1,37 +1,38 @@
 package com.example.backend.dto
 
-import com.example.backend.entity.PedidoDetalle
 import com.example.backend.entity.Pedido
+import com.example.backend.entity.PedidoDetalle
+import tools.jackson.databind.annotation.JsonSerialize
+import tools.jackson.databind.ser.std.ToStringSerializer
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class PedidoResponse(
     val id: Int,
-    val fecha: LocalDateTime,
-    val nombre: String,
-    val telefono: String,
-    val tipoEntrega: String,
+    val fecha: LocalDateTime?,
+
+    @JsonSerialize(using = ToStringSerializer::class)
+    val total: BigDecimal?,
+
+    val estado: String?,
+    val formaPago: String?,
+    val clienteNombre: String?,
+    val clienteTelefono: String?,
     val direccionEntrega: String?,
-    val formaPago: String,
-    val estado: String,
-    val total: Double,
     val detalles: List<PedidoDetalleResponse> = emptyList(),
 ) {
     companion object {
-        fun fromEntity(
-            p: Pedido,
-            detalles: List<PedidoDetalle> = emptyList(),
-        ): PedidoResponse =
+        fun fromEntity(p: Pedido, detalles: List<PedidoDetalle> = emptyList()): PedidoResponse =
             PedidoResponse(
                 id = p.id ?: 0,
                 fecha = p.fecha,
-                nombre = p.nombre,
-                telefono = p.telefono,
-                tipoEntrega = p.tipoEntrega,
-                direccionEntrega = p.direccionEntrega,
-                formaPago = p.formaPago,
-                estado = p.estado,
                 total = p.total,
-                detalles = detalles.map(PedidoDetalleResponse::fromEntity),
+                estado = p.estado,
+                formaPago = p.formaPago,
+                clienteNombre = p.clienteNombre,
+                clienteTelefono = p.clienteTelefono,
+                direccionEntrega = p.direccionEntrega,
+                detalles = detalles.map { PedidoDetalleResponse.fromEntity(it) },
             )
     }
 }

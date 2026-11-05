@@ -81,4 +81,13 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body)
     }
+    @ExceptionHandler(SolicitudInvalidaException::class)
+    fun handleSolicitudInvalida(ex: SolicitudInvalidaException): ResponseEntity<ErrorResponse> {
+        val body = ErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = "Bad Request",
+            message = ex.message ?: "Solicitud inválida"
+        )
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body)
+    }
 }
