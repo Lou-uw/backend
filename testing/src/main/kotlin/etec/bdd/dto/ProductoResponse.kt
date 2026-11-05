@@ -8,11 +8,12 @@ import java.math.BigDecimal
 data class ProductoResponse(
     val id: Int,
     val nombre: String,
+    val descripcion: String?,
+    val imagen: String?,
     val categoriaId: Int,
-    val tipoSaborId: Int?,
 
     @JsonSerialize(using = ToStringSerializer::class)
-    val precio: BigDecimal?,
+    val precioBase: BigDecimal,
 
     val stock: Int?,
     val activo: Boolean,
@@ -21,10 +22,11 @@ data class ProductoResponse(
         fun fromEntity(p: Producto): ProductoResponse =
             ProductoResponse(
                 id = p.id ?: 0,
-                nombre = p.nombre ?: "",
+                nombre = p.nombre,
+                descripcion = p.descripcion,
+                imagen = p.imagen,
                 categoriaId = p.categoria?.id ?: 0,
-                tipoSaborId = p.tipoSabor?.id,
-                precio = p.precio,
+                precioBase = p.precioBase,
                 stock = p.stock,
                 activo = p.activo,
             )

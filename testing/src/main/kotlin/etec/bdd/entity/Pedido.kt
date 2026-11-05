@@ -8,10 +8,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.FetchType
-import jakarta.persistence.JoinColumn
-
 
 @Entity
 @Table(name = "pedidos")
@@ -20,18 +16,33 @@ open class Pedido(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-    var fecha: LocalDateTime? = null,
+    @Column(nullable = false)
+    var fecha: LocalDateTime = LocalDateTime.now(),
 
-    @Column(precision = 10, scale = 2)
-    var total: BigDecimal? = null,
+    @Column(nullable = false, length = 100)
+    var nombre: String = "",
 
-    @Column(length = 100)
-    var estado: String? = null,
+    @Column(nullable = false, length = 30)
+    var telefono: String = "",
+
+    /**
+     * Valores esperados: DELIVERY o RETIRO.
+     */
+    @Column(name = "tipo_entrega", nullable = false, length = 30)
+    var tipoEntrega: String = "",
 
     @Column(name = "direccion_entrega", length = 300)
     var direccionEntrega: String? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente_id")
-    var cliente: Cliente? = null
+    /**
+     * Valores esperados: EFECTIVO, TARJETA o TRANSFERENCIA.
+     */
+    @Column(name = "forma_pago", nullable = false, length = 30)
+    var formaPago: String = "",
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    var total: BigDecimal = BigDecimal.ZERO,
+
+    @Column(nullable = false, length = 30)
+    var estado: String = "PENDIENTE",
 )

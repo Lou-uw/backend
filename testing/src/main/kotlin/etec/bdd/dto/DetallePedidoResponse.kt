@@ -11,14 +11,16 @@ data class DetallePedidoResponse(
     val productoId: Int?,
     val tamanioId: Int?,
     val bordeId: Int?,
-    val cantidad: Int?,
+    val borde: String?,
+    val cantidad: Int,
 
     @JsonSerialize(using = ToStringSerializer::class)
-    val precioUnitario: BigDecimal?,
+    val precioUnitario: BigDecimal,
 
     @JsonSerialize(using = ToStringSerializer::class)
     val precioBorde: BigDecimal,
 
+    val descripcion: String?,
 ) {
     companion object {
         fun fromEntity(d: DetallePedido): DetallePedidoResponse =
@@ -28,9 +30,11 @@ data class DetallePedidoResponse(
                 productoId = d.producto?.id,
                 tamanioId = d.tamanio?.id,
                 bordeId = d.borde?.id,
+                borde = d.borde?.nombre,
                 cantidad = d.cantidad,
                 precioUnitario = d.precioUnitario,
                 precioBorde = d.precioBorde,
+                descripcion = d.descripcion,
             )
     }
 }

@@ -12,13 +12,18 @@ data class ProductoRequest(
     @field:Size(min = 1, max = 100)
     val nombre: String,
 
+    @field:Size(max = 500)
+    val descripcion: String? = null,
+
+    @field:Size(max = 500)
+    val imagen: String? = null,
+
     @field:NotNull
     val categoriaId: Int,
 
-    val tipoSaborId: Int? = null,      // solo pizzas
-
+    @field:NotNull
     @field:DecimalMin(value = "0.0", inclusive = true)
-    val precio: BigDecimal? = null,    // solo papas y bebidas
+    val precioBase: BigDecimal,
 
     @field:Min(0)
     val stock: Int? = null,

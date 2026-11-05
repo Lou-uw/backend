@@ -3,7 +3,7 @@ package com.example.backend
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["com.example.backend", "etec.bdd"])
 class TestingApplication
 
 fun main(args: Array<String>) {

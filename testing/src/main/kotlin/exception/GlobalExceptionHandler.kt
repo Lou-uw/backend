@@ -1,5 +1,6 @@
 package etec.bdd.exception
 
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -26,6 +27,36 @@ class GlobalExceptionHandler {
             message = ex.message ?: "Recurso no encontrado"
         )
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body)
+    }
+
+    @ExceptionHandler(RecursoNoEncontradoException::class)
+    fun handleRecursoNoEncontrado(ex: RecursoNoEncontradoException): ResponseEntity<ErrorResponse> {
+        val body = ErrorResponse(
+            status = HttpStatus.NOT_FOUND.value(),
+            error = "Not Found",
+            message = ex.message ?: "Recurso no encontrado"
+        )
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body)
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleReglaDeNegocio(ex: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+        val body = ErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = "Bad Request",
+            message = ex.message ?: "Solicitud inválida"
+        )
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body)
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    fun handleDataIntegrity(ex: DataIntegrityViolationException): ResponseEntity<ErrorResponse> {
+        val body = ErrorResponse(
+            status = HttpStatus.CONFLICT.value(),
+            error = "Conflict",
+            message = "No se puede completar la operación porque el recurso tiene registros asociados"
+        )
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)

@@ -15,5 +15,5 @@ open class Categoria(
     var id: Int? = null,
 
     @Column(nullable = false, length = 50)
-    var nombre: String = ""
+    var nombre: String = "",
 )

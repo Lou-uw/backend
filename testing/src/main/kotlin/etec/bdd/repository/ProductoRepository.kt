@@ -1,8 +1,11 @@
 package etec.bdd.repository
 
-import etec.bdd.entity.Tamanio
+import etec.bdd.entity.Producto
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProductoRepository : JpaRepository<Tamanio, Int>
+interface ProductoRepository : JpaRepository<Producto, Int> {
+    fun findByActivoTrue(): List<Producto>
+    fun findByCategoriaId(categoriaId: Int): List<Producto>
+}
