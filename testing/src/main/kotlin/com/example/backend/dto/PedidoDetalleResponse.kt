@@ -3,7 +3,6 @@ package com.example.backend.dto
 import com.example.backend.entity.PedidoDetalle
 import tools.jackson.databind.annotation.JsonSerialize
 import tools.jackson.databind.ser.std.ToStringSerializer
-import java.math.BigDecimal
 
 data class PedidoDetalleResponse(
     val id: Int,
@@ -14,17 +13,17 @@ data class PedidoDetalleResponse(
     val cantidad: Int,
 
     @JsonSerialize(using = ToStringSerializer::class)
-    val precioUnitario: BigDecimal,
+    val precioUnitario: Double,
 
     @JsonSerialize(using = ToStringSerializer::class)
-    val precioBorde: BigDecimal,
+    val precioBorde: Double,
 
     @JsonSerialize(using = ToStringSerializer::class)
-    val subtotal: BigDecimal,
+    val subtotal: Double,
 ) {
     companion object {
         fun fromEntity(d: PedidoDetalle): PedidoDetalleResponse {
-            val unitario = d.precioUnitario ?: BigDecimal.ZERO
+            val unitario = d.precioUnitario ?: 0.0
             val cantidad = d.cantidad ?: 0
             return PedidoDetalleResponse(
                 id = d.id ?: 0,
@@ -35,7 +34,7 @@ data class PedidoDetalleResponse(
                 cantidad = cantidad,
                 precioUnitario = unitario,
                 precioBorde = d.precioBorde,
-                subtotal = unitario.add(d.precioBorde).multiply(BigDecimal(cantidad)),
+                subtotal = (unitario + d.precioBorde) * cantidad,
             )
         }
     }

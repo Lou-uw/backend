@@ -4,7 +4,6 @@ import com.example.backend.entity.Pedido
 import com.example.backend.entity.PedidoDetalle
 import tools.jackson.databind.annotation.JsonSerialize
 import tools.jackson.databind.ser.std.ToStringSerializer
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class PedidoResponse(
@@ -12,7 +11,7 @@ data class PedidoResponse(
     val fecha: LocalDateTime?,
 
     @JsonSerialize(using = ToStringSerializer::class)
-    val total: BigDecimal?,
+    val total: Double?,
 
     val estado: String?,
     val formaPago: String?,

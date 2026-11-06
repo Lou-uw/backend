@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
@@ -20,7 +19,7 @@ class Pedido(
     var fecha: LocalDateTime? = null,
 
     @Column(name = "total")
-    var total: BigDecimal? = null,
+    var total: Double? = null,
 
     @Column(name = "estado", length = 50)
     var estado: String? = null,

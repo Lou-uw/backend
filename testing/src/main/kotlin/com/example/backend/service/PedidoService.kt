@@ -14,7 +14,6 @@ import com.example.backend.repository.ProductoRepository
 import com.example.backend.repository.TamanioRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Service
@@ -44,7 +43,7 @@ class PedidoService(
         val pedido = pedidoRepository.save(
             Pedido(
                 fecha = LocalDateTime.now(),
-                total = BigDecimal.ZERO,
+                total = 0.0,
                 estado = "Pendiente",
                 formaPago = req.formaPago,
                 clienteNombre = req.clienteNombre,
@@ -53,7 +52,7 @@ class PedidoService(
             )
         )
 
-        var total = BigDecimal.ZERO
+        var total = 0.0
         val guardados = mutableListOf<PedidoDetalle>()
 
         for (item in req.detalles) {
@@ -68,8 +67,8 @@ class PedidoService(
             val esPizza = categoriaNombre == "Pizzas Clásicas" || categoriaNombre == "Pizzas Especiales"
 
             val tamanio: Tamanio?
-            val precioUnitario: BigDecimal
-            var precioBorde = BigDecimal.ZERO
+            val precioUnitario: Double
+            var precioBorde = 0.0
 
             if (esPizza) {
                 val tamanioId = item.tamanioId
@@ -79,25 +78,23 @@ class PedidoService(
                 tamanio = t
 
                 precioUnitario = if (categoriaNombre == "Pizzas Especiales") {
-                    BigDecimal.valueOf(t.precioEspecial)
+                    t.precioEspecial
                 } else {
-                    BigDecimal.valueOf(t.precioClasica)
+                    t.precioClasica
                 }
                 if (item.conBorde) {
-                    precioBorde = BigDecimal.valueOf(t.precioBorde)
+                    precioBorde = t.precioBorde
                 }
             } else {
                 if (item.conBorde) {
                     throw SolicitudInvalidaException("El borde solo se puede pedir con una pizza")
                 }
                 tamanio = null
-                precioUnitario = producto.precio?.let { BigDecimal.valueOf(it) }
+                precioUnitario = producto.precio
                     ?: throw SolicitudInvalidaException("El producto '${producto.nombre}' no tiene precio")
             }
 
-            total = total.add(
-                precioUnitario.add(precioBorde).multiply(BigDecimal(item.cantidad))
-            )
+            total += (precioUnitario + precioBorde) * item.cantidad
 
             guardados.add(
                 detalleRepository.save(

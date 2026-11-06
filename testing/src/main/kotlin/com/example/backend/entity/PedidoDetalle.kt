@@ -9,7 +9,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import java.math.BigDecimal
 
 @Entity
 @Table(name = "detalle_pedido")
@@ -37,8 +36,8 @@ class PedidoDetalle(
     var cantidad: Int? = null,
 
     @Column(name = "precio_unitario")
-    var precioUnitario: BigDecimal? = null,
+    var precioUnitario: Double? = null,
 
     @Column(name = "precio_borde")
-    var precioBorde: BigDecimal = BigDecimal.ZERO
+    var precioBorde: Double = 0.0
 )
