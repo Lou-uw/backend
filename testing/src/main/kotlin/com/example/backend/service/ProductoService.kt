@@ -2,12 +2,14 @@ package com.example.backend.service
 
 import com.example.backend.dto.ProductoRequest
 import com.example.backend.dto.ProductoResponse
+import com.example.backend.dto.TamanioResponse
 import com.example.backend.entity.Categoria
 import com.example.backend.entity.Producto
 import com.example.backend.exception.ProductoNoEncontradoException
 import com.example.backend.exception.RecursoNoEncontradoException
 import com.example.backend.repository.CategoriaRepository
 import com.example.backend.repository.ProductoRepository
+import com.example.backend.repository.TamanioRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,14 +17,26 @@ import org.springframework.transaction.annotation.Transactional
 class ProductoService(
     private val productoRepository: ProductoRepository,
     private val categoriaRepository: CategoriaRepository,
+    private val tamanioRepository: TamanioRepository,
 ) {
     fun listar(categoriaId: Int? = null): List<ProductoResponse> {
+        val productosConTamanios = mutableListOf<ProductoResponse>()
+        val tamanios = tamanioRepository.findAll().map(TamanioResponse::fromEntity)
         val productos = if (categoriaId != null) {
             productoRepository.findByCategoriaId(categoriaId)
         } else {
             productoRepository.findAll()
         }
-        return productos.map(ProductoResponse::fromEntity)
+
+        val productosResponse = productos.map(ProductoResponse::fromEntity)
+
+        for (producto in productosResponse) {
+            for (tamanio in tamanios) {
+                producto.tamanio = tamanio
+                productosConTamanios.add(producto)
+            }
+        }
+        return productosConTamanios
     }
 
     fun obtener(id: Int): ProductoResponse =
