@@ -13,6 +13,7 @@ data class PedidoDetalleResponse(
     val tamanioId: Int?,
     val conBorde: Boolean,
     val cantidad: Int,
+    val esRegalo: Boolean,
 
     @JsonSerialize(using = ToStringSerializer::class)
     val precioUnitario: Double,
@@ -36,6 +37,7 @@ data class PedidoDetalleResponse(
                 tamanioId = d.tamanio?.id,
                 conBorde = d.conBorde,
                 cantidad = cantidad,
+                esRegalo = d.esRegalo,
                 precioUnitario = unitario,
                 precioBorde = d.precioBorde,
                 subtotal = (unitario + d.precioBorde) * cantidad,

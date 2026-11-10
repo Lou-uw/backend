@@ -43,5 +43,8 @@ class PedidoDetalle(
     var precioUnitario: Double? = null,
 
     @Column(name = "precio_borde")
-    var precioBorde: Double = 0.0
+    var precioBorde: Double = 0.0,
+
+    @Column(name = "es_regalo")
+    var esRegalo: Boolean = false
 )

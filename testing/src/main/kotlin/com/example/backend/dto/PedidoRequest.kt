@@ -10,9 +10,8 @@ data class PedidoRequest(
     @field:Size(max = 100)
     val clienteNombre: String,
 
-    @field:NotBlank
     @field:Size(max = 50)
-    val clienteTelefono: String,
+    val clienteTelefono: String? = null,
 
     @field:NotBlank
     @field:Size(max = 30)
