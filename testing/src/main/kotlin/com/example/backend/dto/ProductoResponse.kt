@@ -1,7 +1,6 @@
 package com.example.backend.dto
 
 import com.example.backend.entity.Producto
-import com.example.backend.entity.Tamanio
 
 data class ProductoResponse(
     val id: Int,
@@ -9,10 +8,9 @@ data class ProductoResponse(
     val descripcion: String?,
     val categoriaId: Int,
     val categoriaNombre: String?,
-    val precio: Double?, // Nullable para las pizzas
+    val precio: Double?, // Nullable para las pizzas (el precio sale del tamaño)
     val stock: Int?,
     val activo: Boolean,
-    val tamanio: TamanioResponse?,
 ) {
     companion object {
         fun fromEntity(p: Producto): ProductoResponse =
@@ -25,7 +23,6 @@ data class ProductoResponse(
                 precio = p.precio,
                 stock = p.stock,
                 activo = p.activo,
-                tamanio = null
             )
     }
 }

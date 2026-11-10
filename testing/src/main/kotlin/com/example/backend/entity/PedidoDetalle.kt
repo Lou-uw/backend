@@ -26,6 +26,10 @@ class PedidoDetalle(
     var producto: Producto? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "combo_id")
+    var combo: Combo? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tamanio_id")
     var tamanio: Tamanio? = null,
 

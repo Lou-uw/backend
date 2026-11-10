@@ -34,5 +34,8 @@ class Pedido(
     var clienteTelefono: String? = null,
 
     @Column(name = "direccion_entrega", length = 300)
-    var direccionEntrega: String? = null
+    var direccionEntrega: String? = null,
+
+    @Column(name = "notas", length = 300)
+    var notas: String? = null
 )

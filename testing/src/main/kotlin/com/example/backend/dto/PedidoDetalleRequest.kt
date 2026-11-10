@@ -4,8 +4,9 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 
 data class PedidoDetalleRequest(
-    @field:NotNull
-    val productoId: Int,
+    // Cada ítem es un producto o un combo, nunca los dos.
+    val productoId: Int? = null,
+    val comboId: Int? = null,
 
     val tamanioId: Int? = null,      // obligatorio solo en pizzas
     val conBorde: Boolean = false,   // solo en pizzas

@@ -18,8 +18,12 @@ data class PedidoRequest(
     @field:Size(max = 30)
     val formaPago: String,
 
+    @field:NotBlank
     @field:Size(max = 300)
     val direccionEntrega: String? = null,
+
+    @field:Size(max = 300)
+    val notas: String? = null,
 
     @field:NotEmpty
     @field:Valid

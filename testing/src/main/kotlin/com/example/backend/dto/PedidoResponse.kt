@@ -18,6 +18,7 @@ data class PedidoResponse(
     val clienteNombre: String?,
     val clienteTelefono: String?,
     val direccionEntrega: String?,
+    val notas: String?,
     val detalles: List<PedidoDetalleResponse> = emptyList(),
 ) {
     companion object {
@@ -31,6 +32,7 @@ data class PedidoResponse(
                 clienteNombre = p.clienteNombre,
                 clienteTelefono = p.clienteTelefono,
                 direccionEntrega = p.direccionEntrega,
+                notas = p.notas,
                 detalles = detalles.map { PedidoDetalleResponse.fromEntity(it) },
             )
     }
