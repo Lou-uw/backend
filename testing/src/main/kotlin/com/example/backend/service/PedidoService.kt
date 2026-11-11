@@ -11,7 +11,6 @@ import com.example.backend.entity.Tamanio
 import com.example.backend.exception.ProductoNoEncontradoException
 import com.example.backend.exception.RecursoNoEncontradoException
 import com.example.backend.exception.SolicitudInvalidaException
-import com.example.backend.repository.ComboRepository
 import com.example.backend.repository.PedidoDetalleRepository
 import com.example.backend.repository.PedidoRepository
 import com.example.backend.repository.ProductoRepository
@@ -28,8 +27,7 @@ class PedidoService(
     private val pedidoRepository: PedidoRepository,
     private val detalleRepository: PedidoDetalleRepository,
     private val productoRepository: ProductoRepository,
-    private val tamanioRepository: TamanioRepository,
-    private val comboRepository: ComboRepository
+    private val tamanioRepository: TamanioRepository
 ) {
 
     @Transactional(readOnly = true)
@@ -103,13 +101,8 @@ class PedidoService(
                 continue
             }
 
-            if (item.comboId != null) {
-                total += guardarCombo(pedido, item.comboId, item.productoId, item.conBorde, item.cantidad, guardados)
-                continue
-            }
-
             val productoId = item.productoId
-                ?: throw SolicitudInvalidaException("Cada ítem necesita un producto o un combo")
+                ?: throw SolicitudInvalidaException("Cada ítem necesita un producto")
 
             val producto = productoRepository.findById(productoId)
                 .orElseThrow { ProductoNoEncontradoException(productoId) }
@@ -248,44 +241,5 @@ class PedidoService(
             PromoConfig.esFinDeSemana -> "/images/promos/promo-sabado-domingo.png"
             else -> null
         }
-    }
-
-    private fun guardarCombo(
-        pedido: Pedido,
-        comboId: Int,
-        productoId: Int?,
-        conBorde: Boolean,
-        cantidad: Int,
-        guardados: MutableList<PedidoDetalle>
-    ): Double {
-        if (productoId != null) {
-            throw SolicitudInvalidaException("Un ítem no puede ser producto y combo a la vez")
-        }
-        if (conBorde) {
-            throw SolicitudInvalidaException("El borde solo se puede pedir con una pizza")
-        }
-
-        val combo = comboRepository.findById(comboId)
-            .orElseThrow { RecursoNoEncontradoException("Combo", comboId) }
-
-        if (!combo.activo) {
-            throw SolicitudInvalidaException("El combo '${combo.nombre}' no está disponible")
-        }
-
-        guardados.add(
-            detalleRepository.save(
-                PedidoDetalle(
-                    pedido = pedido,
-                    combo = combo,
-                    conBorde = false,
-                    cantidad = cantidad,
-                    precioUnitario = combo.precio,
-                    precioBorde = 0.0,
-                    esRegalo = false
-                )
-            )
-        )
-
-        return combo.precio * cantidad
     }
 }

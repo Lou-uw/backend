@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotNull
 
 data class PedidoDetalleRequest(
     val productoId: Int? = null,
-    val comboId: Int? = null,
-
     val tamanioId: Int? = null,
     val conBorde: Boolean = false,
 

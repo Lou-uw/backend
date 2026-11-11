@@ -8,13 +8,10 @@ data class PedidoDetalleResponse(
     val id: Int,
     val productoId: Int?,
     val producto: String,
-    val comboId: Int?,
-    val combo: String?,
     val tamanioId: Int?,
     val conBorde: Boolean,
     val cantidad: Int,
     val esRegalo: Boolean,
-
     @JsonSerialize(using = ToStringSerializer::class)
     val precioUnitario: Double,
 
@@ -32,8 +29,6 @@ data class PedidoDetalleResponse(
                 id = d.id ?: 0,
                 productoId = d.producto?.id,
                 producto = d.producto?.nombre ?: "",
-                comboId = d.combo?.id,
-                combo = d.combo?.nombre,
                 tamanioId = d.tamanio?.id,
                 conBorde = d.conBorde,
                 cantidad = cantidad,
