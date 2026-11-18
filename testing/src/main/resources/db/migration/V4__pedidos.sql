@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS pedidos (
     forma_pago VARCHAR(30),
     cliente_nombre VARCHAR(100),
     cliente_telefono VARCHAR(50),
-    direccion_entrega VARCHAR(300)
+    direccion_entrega VARCHAR(300),
+    notas VARCHAR(300)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

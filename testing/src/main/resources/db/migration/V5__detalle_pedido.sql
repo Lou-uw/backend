@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS detalle_pedido (
     cantidad INT,
     precio_unitario FLOAT,
     precio_borde FLOAT DEFAULT 0,
+    es_regalo TINYINT(1) DEFAULT 0,
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
     FOREIGN KEY (producto_id) REFERENCES productos(id),
     FOREIGN KEY (tamanio_id) REFERENCES tamanios(id)
