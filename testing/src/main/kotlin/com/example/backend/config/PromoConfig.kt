@@ -10,31 +10,20 @@ object PromoConfig {
     /** Zona horaria del local. Cambiar acá si se mueve el negocio de zona. */
     val zonaHoraria: ZoneId = ZoneId.of("America/Asuncion")
 
-    /**
-     * Fecha forzada para pruebas. Si es null se usa la fecha real del servidor
-     * convertida a la zona horaria del local.
-     * Ejemplo para forzar miércoles: PromoConfig.fechaForzada = LocalDate.of(2026, 11, 11)
-     */
-    var fechaForzada: LocalDate? = null
+    /** Fecha de hoy en la zona horaria del local. */
+    fun hoy(): LocalDate = ZonedDateTime.now(zonaHoraria).toLocalDate()
 
-    /** Fecha efectiva que se usa para evaluar promociones (zona horaria del local). */
-    val fechaHoy: LocalDate
-        get() = fechaForzada ?: ZonedDateTime.now(zonaHoraria).toLocalDate()
+    /** Verdadero si la fecha indicada es miércoles. */
+    fun esMiercoles(fecha: LocalDate): Boolean = fecha.dayOfWeek == DayOfWeek.WEDNESDAY
 
-    /** Día de la semana efectivo. */
-    val diaSemana: DayOfWeek
-        get() = fechaHoy.dayOfWeek
+    /** Verdadero si la fecha indicada es viernes. */
+    fun esViernes(fecha: LocalDate): Boolean = fecha.dayOfWeek == DayOfWeek.FRIDAY
 
-    /** Verdadero si hoy es miércoles. */
-    val esMiercoles: Boolean get() = diaSemana == DayOfWeek.WEDNESDAY
+    /** Verdadero si la fecha indicada es sábado o domingo. */
+    fun esFinDeSemana(fecha: LocalDate): Boolean =
+        fecha.dayOfWeek == DayOfWeek.SATURDAY || fecha.dayOfWeek == DayOfWeek.SUNDAY
 
-    /** Verdadero si hoy es viernes. */
-    val esViernes: Boolean get() = diaSemana == DayOfWeek.FRIDAY
-
-    /** Verdadero si hoy es sábado o domingo. */
-    val esFinDeSemana: Boolean get() =
-        diaSemana == DayOfWeek.SATURDAY || diaSemana == DayOfWeek.SUNDAY
-
-    /** Verdadero si hoy tiene alguna promoción activa. */
-    val hayPromoActiva: Boolean get() = esMiercoles || esViernes || esFinDeSemana
+    /** Verdadero si la fecha indicada tiene alguna promoción activa. */
+    fun hayPromoActiva(fecha: LocalDate): Boolean =
+        esMiercoles(fecha) || esViernes(fecha) || esFinDeSemana(fecha)
 }

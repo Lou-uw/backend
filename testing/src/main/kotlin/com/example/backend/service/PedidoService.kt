@@ -7,6 +7,7 @@ import com.example.backend.dto.PromoInfo
 import com.example.backend.dto.PedidoDetalleRequest
 import com.example.backend.entity.Pedido
 import com.example.backend.entity.PedidoDetalle
+import com.example.backend.entity.Producto
 import com.example.backend.entity.Tamanio
 import com.example.backend.exception.ProductoNoEncontradoException
 import com.example.backend.exception.RecursoNoEncontradoException
@@ -17,10 +18,13 @@ import com.example.backend.repository.ProductoRepository
 import com.example.backend.repository.TamanioRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.LocalDateTime
 
-internal const val PRODUCTO_PAPA_MEDIANA = 23
-internal const val PRODUCTO_COCACOLA_1L = 25
+private const val PRODUCTO_PAPA_MEDIANA = "Papas fritas mediana"
+private const val PRODUCTO_COCACOLA_1L = "Coca-Cola 1 L"
+private const val TAMANIO_GRANDE = "Grande"
+private const val TAMANIO_FAMILIAR = "Familiar"
 
 @Service
 class PedidoService(
@@ -32,7 +36,7 @@ class PedidoService(
 
     @Transactional(readOnly = true)
     fun listar(): List<PedidoResponse> {
-        return pedidoRepository.findAll()
+        return pedidoRepository.findAllByOrderByFechaDesc()
             .map { PedidoResponse.fromEntity(it) }
     }
 
@@ -45,20 +49,31 @@ class PedidoService(
     }
 
     @Transactional(readOnly = true)
-    fun promoHoy(): PromoInfo {
+    fun promoHoy(): PromoInfo = promoParaFecha(PromoConfig.hoy())
+
+    @Transactional(readOnly = true)
+    fun promoParaFecha(fecha: LocalDate): PromoInfo {
         return PromoInfo(
-            fecha = PromoConfig.fechaHoy,
-            diaSemana = PromoConfig.diaSemana.name,
-            hayPromoActiva = PromoConfig.hayPromoActiva,
-            tipoPromo = tipoPromoHoy(),
-            descripcion = descripcionPromoHoy(),
-            imagen = imagenPromoHoy()
+            fecha = fecha,
+            diaSemana = fecha.dayOfWeek.name,
+            hayPromoActiva = PromoConfig.hayPromoActiva(fecha),
+            tipoPromo = tipoPromo(fecha),
+            descripcion = descripcionPromo(fecha),
+            imagen = imagenPromo(fecha)
         )
     }
 
     @Transactional
     fun crear(req: PedidoRequest): PedidoResponse {
-        val regalosPromo = determinarRegalosPromo(req)
+        if (req.detalles.any { it.esRegalo }) {
+            throw SolicitudInvalidaException(
+                "Los ítems regalo no se pueden enviar desde el cliente; " +
+                    "los regalos solo los determina la promoción"
+            )
+        }
+
+        val fecha = PromoConfig.hoy()
+        val regalosPromo = determinarRegalosPromo(req, fecha)
         val todosDetalles = req.detalles + regalosPromo
 
         val pedido = pedidoRepository.save(
@@ -166,8 +181,11 @@ class PedidoService(
         return PedidoResponse.fromEntity(pedido, guardados)
     }
 
-    private fun determinarRegalosPromo(req: PedidoRequest): List<PedidoDetalleRequest> {
-        if (!PromoConfig.hayPromoActiva) return emptyList()
+    private fun determinarRegalosPromo(req: PedidoRequest, fecha: LocalDate): List<PedidoDetalleRequest> {
+        if (!PromoConfig.hayPromoActiva(fecha)) return emptyList()
+
+        val tamanioGrande = buscarTamanioPorNombre(TAMANIO_GRANDE)
+        val tamanioFamiliar = buscarTamanioPorNombre(TAMANIO_FAMILIAR)
 
         var pizzasGrande = 0
         var pizzasFamiliar = 0
@@ -184,28 +202,45 @@ class PedidoService(
             val tamanio = tamanioOpt.get()
 
             when (tamanio.id) {
-                2 -> pizzasGrande++
-                3 -> pizzasFamiliar++
+                tamanioGrande.id -> pizzasGrande++
+                tamanioFamiliar.id -> pizzasFamiliar++
             }
         }
 
         return when {
-            PromoConfig.esMiercoles && (pizzasGrande >= 1 || pizzasFamiliar >= 1) ->
-                listOf(regalo(PRODUCTO_PAPA_MEDIANA, 1))
-            PromoConfig.esViernes && pizzasFamiliar >= 1 ->
-                listOf(regalo(PRODUCTO_COCACOLA_1L, 1))
-            PromoConfig.esFinDeSemana && pizzasFamiliar >= 2 ->
+            PromoConfig.esMiercoles(fecha) && (pizzasGrande >= 1 || pizzasFamiliar >= 1) ->
+                listOf(regalo(buscarProductoPorNombre(PRODUCTO_PAPA_MEDIANA), 1))
+            PromoConfig.esViernes(fecha) && pizzasFamiliar >= 1 ->
+                listOf(regalo(buscarProductoPorNombre(PRODUCTO_COCACOLA_1L), 1))
+            PromoConfig.esFinDeSemana(fecha) && pizzasFamiliar >= 2 ->
                 listOf(
-                    regalo(PRODUCTO_COCACOLA_1L, 1),
-                    regalo(PRODUCTO_PAPA_MEDIANA, 1)
+                    regalo(buscarProductoPorNombre(PRODUCTO_COCACOLA_1L), 1),
+                    regalo(buscarProductoPorNombre(PRODUCTO_PAPA_MEDIANA), 1)
                 )
             else -> emptyList()
         }
     }
 
-    private fun regalo(productoId: Int, cantidad: Int) =
+    private fun buscarProductoPorNombre(nombre: String): Producto =
+        productoRepository.findByNombre(nombre)
+            .orElseThrow {
+                SolicitudInvalidaException(
+                    "No se encontró el producto '$nombre' requerido por la promoción"
+                )
+            }
+
+    private fun buscarTamanioPorNombre(nombre: String): Tamanio =
+        tamanioRepository.findByNombre(nombre)
+            .orElseThrow {
+                SolicitudInvalidaException(
+                    "No se encontró el tamaño '$nombre' requerido por la promoción"
+                )
+            }
+
+    private fun regalo(producto: Producto, cantidad: Int) =
         PedidoDetalleRequest(
-            productoId = productoId,
+            productoId = producto.id
+                ?: throw SolicitudInvalidaException("El producto '${producto.nombre}' no tiene ID"),
             esRegalo = true,
             cantidad = cantidad
         )
@@ -213,32 +248,32 @@ class PedidoService(
     private fun esPizzaCategoria(categoriaNombre: String?): Boolean =
         categoriaNombre == "Pizzas Clásicas" || categoriaNombre == "Pizzas Especiales"
 
-    private fun tipoPromoHoy(): String? {
+    private fun tipoPromo(fecha: LocalDate): String? {
         return when {
-            PromoConfig.esMiercoles -> "miercoles"
-            PromoConfig.esViernes -> "viernes"
-            PromoConfig.esFinDeSemana -> "fin_de_semana"
+            PromoConfig.esMiercoles(fecha) -> "miercoles"
+            PromoConfig.esViernes(fecha) -> "viernes"
+            PromoConfig.esFinDeSemana(fecha) -> "fin_de_semana"
             else -> null
         }
     }
 
-    private fun descripcionPromoHoy(): String? {
+    private fun descripcionPromo(fecha: LocalDate): String? {
         return when {
-            PromoConfig.esMiercoles ->
+            PromoConfig.esMiercoles(fecha) ->
                 "Miércoles de papa: comprá una pizza Grande o Familiar y llevá una papa frita mediana de regalo."
-            PromoConfig.esViernes ->
+            PromoConfig.esViernes(fecha) ->
                 "Viernes de gaseosa: comprá una pizza Familiar y llevá una Coca-Cola 1 L de regalo."
-            PromoConfig.esFinDeSemana ->
+            PromoConfig.esFinDeSemana(fecha) ->
                 "Fin de semana doble: comprá dos pizzas Familiares y llevá una Coca-Cola 1 L y una papa frita mediana de regalo."
             else -> null
         }
     }
 
-    private fun imagenPromoHoy(): String? {
+    private fun imagenPromo(fecha: LocalDate): String? {
         return when {
-            PromoConfig.esMiercoles -> "/images/promos/promo-miercoles.png"
-            PromoConfig.esViernes -> "/images/promos/promo-viernes.png"
-            PromoConfig.esFinDeSemana -> "/images/promos/promo-sabado-domingo.png"
+            PromoConfig.esMiercoles(fecha) -> "/images/promo-miercoles.png"
+            PromoConfig.esViernes(fecha) -> "/images/promo-viernes.png"
+            PromoConfig.esFinDeSemana(fecha) -> "/images/promo-sabado-domingo.png"
             else -> null
         }
     }

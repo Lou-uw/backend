@@ -3,9 +3,7 @@ package com.example.backend.controller
 import com.example.backend.config.PromoConfig
 import com.example.backend.dto.PromoInfo
 import com.example.backend.service.PedidoService
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -45,29 +43,12 @@ class PromoController(private val pedidoService: PedidoService) {
         val diaUpper = dia.uppercase()
         val diaSemana = diaMap[diaUpper]
             ?: throw IllegalArgumentException("Día inválido: $dia")
-        val fechaForzadaGuardada = PromoConfig.fechaForzada
-        try {
-            // Buscar una fecha que caiga en ese día de la semana
-            var fecha = LocalDate.now()
-            while (fecha.dayOfWeek != diaSemana) {
-                fecha = fecha.plusDays(1)
-            }
-            PromoConfig.fechaForzada = fecha
-            return pedidoService.promoHoy()
-        } finally {
-            PromoConfig.fechaForzada = fechaForzadaGuardada
+
+        // Buscar la próxima fecha que caiga en ese día de la semana.
+        var fecha: LocalDate = PromoConfig.hoy()
+        while (fecha.dayOfWeek != diaSemana) {
+            fecha = fecha.plusDays(1)
         }
-    }
-
-    // --- Endpoints de prueba para forzar la fecha (solo desarrollo) ---
-    @PostMapping("/test/forzar-fecha")
-    fun forzarFecha(@RequestParam fecha: String): PromoInfo {
-        PromoConfig.fechaForzada = LocalDate.parse(fecha)
-        return pedidoService.promoHoy()
-    }
-
-    @DeleteMapping("/test/forzar-fecha")
-    fun limpiarFechaForzada() {
-        PromoConfig.fechaForzada = null
+        return pedidoService.promoParaFecha(fecha)
     }
 }
